@@ -1,0 +1,186 @@
+/* Font global */
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+}
+
+/* Bagian kiri */
+.left {
+  flex: 1;
+  background: linear-gradient(to bottom, #f9d423, #3a7bd5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  height: 100vh;   /* ✅ tambahkan biar penuh layar */
+}
+.left {
+  padding-bottom: 0;
+}
+
+.logo-hg {
+  width: 120px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+}
+
+.text-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.left h1 {
+  font-size: 40px;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: auto;
+  margin-top: 100px;
+}
+
+.left p {
+  font-size: 40px;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: auto;
+  margin-top: 100px;
+}
+
+.left h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* ✅ Siluet (fix) */
+.siluet {
+  position: absolute;
+  bottom: 0;             /* ✅ mentok bawah */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;     /* sesuai kebutuhan */
+  height: auto;
+  margin: 0;
+  z-index: 1;
+}
+
+/* Bagian kanan */
+.right {
+  flex: 1;
+  background: linear-gradient(to bottom, #f9d423, #3a7bd5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-box {
+  transform: translateX(-100px);
+  background: rgb(255, 255, 255);
+  padding: 40px;
+  border-radius: 12px;
+  width: 500px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 5px;
+  color: #003366;
+  font-weight: 700;
+}
+
+.form-box p {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #0055aa;
+  font-weight: 400;
+}
+
+.form-box label {
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-box input[type="text"],
+.form-box input[type="email"],
+.form-box input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-box input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.form-box button {
+  width: 100%;
+  padding: 12px;
+  background: #ffcc00;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-box button:hover {
+  background: #e6b800;
+}
+
+.form-box .login-link {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.form-box .login-link a {
+  color: #003366;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.small-text {
+  font-size: 12px;
+  color: #000000;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left, .right {
+    flex: none;
+    width: 100%;
+    height: auto;
+  }
+
+  .form-box {
+    transform: none;
+    width: 90%;
+    margin: 20px auto;
+  }
+}

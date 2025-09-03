@@ -1,0 +1,128 @@
+body { 
+    margin: 0; 
+    font-family: Arial, sans-serif; 
+    background: #f9f9f9; 
+    color: #222; 
+}
+header { 
+    background: #003366; 
+    padding: 1rem 3rem; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+header h1 { 
+    color: white; 
+    font-size: 1.2rem; 
+    margin: 0; 
+}
+nav a { 
+    color: white; 
+    margin: 0 1rem; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+.btn-login { 
+    background: #FFD700; 
+    padding: 0.5rem 1rem; 
+    border-radius: 5px; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+/* Hero */
+.hero { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 3rem; 
+    background: #0055A5; 
+    color: white; 
+}
+.hero h2 { 
+    font-size: 2rem; 
+    margin-bottom: 1rem; 
+}
+.hero button { 
+    padding: 0.7rem 1.5rem; 
+    background: #FFD700; 
+    border: none; 
+    border-radius: 5px; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+.hero-image {
+    width: 400px; /* Mengatur lebar gambar */
+    height: auto; /* Memastikan rasio aspek gambar tetap terjaga */
+    border-radius: 10px; /* Memberikan sudut yang membulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Menambahkan bayangan untuk efek 3D */
+    margin-left: 20px; /* Memberikan jarak dari teks di sebelah kirinya */
+}
+/* Statistik */
+.stats { 
+    display: flex; 
+    justify-content: space-around; 
+    margin: -2rem auto 2rem auto; 
+    background: white; 
+    padding: 1.5rem; 
+    width: 80%; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+.stats div { 
+    text-align: center; 
+}
+.stats h3 { 
+    margin: 0; 
+    font-size: 1.5rem; 
+    color: #003366; 
+}
+
+/* Section umum */
+section { 
+    padding: 3rem; 
+}
+section h2 { 
+    color: #003366; 
+    margin-bottom: 1rem; 
+}
+
+/* Berita */
+.berita { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+}
+.berita ul { 
+    list-style: none; 
+    padding: 0; 
+}
+.berita li { 
+    margin: 1rem 0; 
+}
+
+/* Testimoni */
+.testimoni { 
+    display: flex; 
+    gap: 2rem; 
+}
+.testimoni div { 
+    flex: 1; 
+    background: #0055A5; 
+    color: white; 
+    padding: 2rem; 
+    border-radius: 10px; 
+}
+
+/* Footer */
+footer { 
+    background: #003366; 
+    color: white; 
+    padding: 2rem; 
+    text-align: center; 
+}
+footer .sosmed a { 
+    color: white; 
+    margin: 0 0.5rem; 
+    text-decoration: none; 
+}

@@ -1,0 +1,217 @@
+/* public/css/style-lapsemestermhs.css */
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.container-dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.menu-header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.menu-items {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.menu-items li a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    text-decoration: none;
+    color: #555;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.menu-items li a:hover,
+.menu-items li.active a {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.icon-menu {
+    width: 24px;
+    height: 24px;
+    background-color: #ccc; /* Placeholder untuk ikon */
+    border-radius: 4px;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    padding: 0 40px;
+}
+
+/* Navbar */
+.navbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.navbar-header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-header nav a {
+    text-decoration: none;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.navbar-header nav a:hover {
+    color: #1890ff;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #1890ff;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Form Section */
+.content-form {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    margin-top: 40px;
+}
+
+.form-title {
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px 40px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1890ff;
+}
+
+/* File Upload */
+.form-upload {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #d9d9d9;
+    border-radius: 12px;
+    padding: 50px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.upload-area:hover {
+    border-color: #1890ff;
+}
+
+.upload-icon svg {
+    color: #1890ff;
+    width: 48px;
+    height: 48px;
+}
+
+.upload-text {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Button */
+.btn-submit {
+    display: block;
+    width: 150px;
+    margin-left: auto;
+    padding: 12px;
+    background-color: #ffc107;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #e0ac00;
+}

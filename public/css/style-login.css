@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body, html {
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Bagian Kiri */
+.left {
+  flex: 1;
+  background: linear-gradient(to bottom, #f9d423, #3a7bd5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  padding: 30px;
+}
+
+.logo {
+width: 120px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+}
+
+.left h1 {
+  font-size: 40px;
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: auto;
+  margin-top: 100px;
+}
+
+.left h1 span {
+  font-weight: normal;
+}
+
+.siluet {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 600px;
+  margin-top: auto;
+}
+
+.footer-text {
+position: absolute;
+ margin-top: 10px;   /* jarak antara siluet dan tulisan */
+ bottom: 30px;
+ left: 50%;
+ transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  z-index: 2;
+}
+
+/* Bagian Kanan */
+.right {
+  flex: 1;
+  background: linear-gradient(to bottom, #f9d423, #3a7bd5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-box {
+  background: transparent;
+  width: 100%;
+  max-width: 380px;
+  padding: 20px;
+}
+
+.form-box h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #003366;
+  text-align: center;
+}
+
+.sub-text {
+  margin-bottom: 25px;
+  color: #003366;
+  font-size: 14px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #003366;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+}
+
+.forgot {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.forgot a {
+  color: #333;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: #ffd633;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #ffcc00;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.divider:not(:empty)::before {
+  margin-right: .75em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: .75em;
+}
+
+.signup {
+  font-size: 14px;
+  text-align: center;
+  color: #003366;
+}
+
+.signup a {
+  color: #007bff;
+  text-decoration: none;
+}
