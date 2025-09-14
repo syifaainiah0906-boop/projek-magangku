@@ -57,7 +57,7 @@
                     @empty
                         <tr class="bg-white border-b">
                             <td colspan="9" class="py-4 px-6 text-center text-gray-500">
-                                Tidak ada laporan kegiatan yang ditemukan.
+                                Tidak ada laporan semester yang ditemukan.
                             </td>
                         </tr>
                     @endforelse

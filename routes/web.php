@@ -11,8 +11,8 @@ use App\Http\Controllers\SemesterReportController;
 use App\Http\Controllers\AlumniDataController;
 
 
-Route::resource('laporan-semester', SemesterReportController::class);
 Route::get('/data-alumni', [AlumniController::class, 'index'])->name('alumni.index');
+Route::post('logout', '\App\Http\Controllers\AuthController@logout')->name('logout');
 
 // Rute untuk memproses pengiriman formulir
 //Route::post('/laporan-semester', [ReportController::class, 'store'])->name('reports.store')->middleware('auth');

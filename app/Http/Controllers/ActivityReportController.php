@@ -14,17 +14,20 @@ class ActivityReportController extends Controller
      */
     public function index()
     {
+        $search = request('search');
+
+        // Memulai query builder dengan eager loading untuk data user
         $query = ActivityReport::with('user');
 
-        // if ($request->filled('search')) {
-        //     $search = $request->input('search');
-        //     $query->whereHas('user', function ($q) use ($search) {
-        //         $q->where('name', 'like', "%{$search}%")
-        //           ->orWhere('nim', 'like', "%{$search}%");
-        //     })->orWhere('activity_name', 'like', "%{$search}%");
-        // }
+        // Jika ada nilai search, tambahkan kondisi pencarian
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
+        }
 
-        $reports = $query->latest()->paginate(10); // Menggunakan paginate untuk halaman
+        // Ambil data laporan terbaru dengan paginasi
+        $reports = $query->latest()->paginate(10);
         return view('activity_reports.index', compact('reports'));
     }
 
@@ -72,7 +75,7 @@ class ActivityReportController extends Controller
     {
         // Pastikan pengguna hanya bisa melihat laporannya sendiri
         // if ($activityReport->user_id !== Auth::id()) {
-        //     abort(403); // Forbidden
+        //     abort(403);
         // }
         return view('activity_reports.show', compact('activityReport'));
     }
@@ -82,10 +85,10 @@ class ActivityReportController extends Controller
      */
     public function edit(ActivityReport $activityReport)
     {
-        // Pastikan pengguna hanya bisa mengedit laporannya sendiri
-        if ($activityReport->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // Periksa jika pengguna adalah admin ATAU pemilik laporan
+        // if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
+        //     abort(403);
+        // }
         return view('activity_reports.edit', compact('activityReport'));
     }
 
@@ -94,31 +97,32 @@ class ActivityReportController extends Controller
      */
     public function update(Request $request, ActivityReport $activityReport)
     {
-        // Pastikan pengguna hanya bisa mengupdate laporannya sendiri
-        if ($activityReport->user_id !== Auth::id()) {
-            abort(403);
-        }
 
-        $request->validate([
-            'semester' => 'required|string|max:255',
-            'activity_date' => 'required|date',
+    // Periksa jika pengguna adalah admin ATAU pemilik laporan
+    // if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
+    //     abort(403, 'Anda tidak memiliki hak untuk melakukan ini.');
+    // }
+
+        // Aturan validasi yang diperbarui
+        $validatedData = $request->validate([
             'activity_name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
+            'activity_date' => 'required|date',
             'description' => 'required|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->all();
-
+        // Jika ada foto baru diunggah
         if ($request->hasFile('photo')) {
             // Hapus foto lama jika ada
             if ($activityReport->photo_file_path) {
                 Storage::disk('public')->delete($activityReport->photo_file_path);
             }
-            $data['photo_file_path'] = $request->file('photo')->store('photos', 'public');
+            // Simpan foto baru dan update path
+            $validatedData['photo_file_path'] = $request->file('photo')->store('photos', 'public');
         }
 
-        $activityReport->update($data);
+        // Perbarui data laporan
+        $activityReport->update($validatedData);
 
         return redirect()->route('activity_reports.index')->with('success', 'Laporan berhasil diperbarui!');
     }
@@ -128,8 +132,8 @@ class ActivityReportController extends Controller
      */
     public function destroy(ActivityReport $activityReport)
     {
-        // Pastikan pengguna hanya bisa menghapus laporannya sendiri
-        if ($activityReport->user_id !== Auth::id()) {
+        // Periksa jika pengguna adalah admin ATAU pemilik laporan
+        if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
             abort(403);
         }
 

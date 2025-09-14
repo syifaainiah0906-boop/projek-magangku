@@ -17,7 +17,7 @@
             <a href="#">Data Alumni</a>
             <a href="#">Kontak</a>
         </nav>
-        <a href="#" class="btn-login">Login / Daftar</a>
+        <a href="{{ route('login') }}" class="btn-login">Login / Daftar</a>
     </header>
 
     <div class="hero">

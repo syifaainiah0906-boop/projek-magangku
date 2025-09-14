@@ -66,14 +66,10 @@
 
                 <div class="md:col-span-2 mt-8 flex justify-end space-x-4">
                     <a href="{{ route('semester_reports.edit', $semesterReport->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        Edit
+                        Update
                     </a>
                     <form action="{{ route('semester_reports.destroy', $semesterReport->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700">
-                            Hapus
-                        </button>
                     </form>
                 </div>
             </div>

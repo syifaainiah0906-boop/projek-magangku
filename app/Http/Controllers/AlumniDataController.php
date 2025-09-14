@@ -14,6 +14,9 @@ class AlumniDataController extends Controller
      */
     public function index()
     {
+        $query = AlumniData::with('user');
+
+
         $alumnis = AlumniData::with('user')->latest()->paginate(10);
         return view('alumni_data.index', compact('alumnis'));
     }
@@ -60,6 +63,7 @@ class AlumniDataController extends Controller
      */
     public function show(AlumniData $alumniDatum)
     {
+        // dd($alumniDatum->id);
         return view('alumni_data.show', compact('alumniDatum'));
     }
 
@@ -68,9 +72,7 @@ class AlumniDataController extends Controller
      */
     public function edit(AlumniData $alumniDatum)
     {
-        // if ($alumniDatum->user_id !== Auth::id()) {
-        //     abort(403);
-        // }
+        // dd($alumniDatum->id);
         return view('alumni_data.edit', compact('alumniDatum'));
     }
 
@@ -79,21 +81,23 @@ class AlumniDataController extends Controller
      */
     public function update(Request $request, AlumniData $alumniDatum)
     {
-        if ($alumniDatum->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // if ($alumniDatum->user_id !== Auth::id()) {
+        //     abort(403);
+        // }
 
-        $request->validate([
-            'graduation_year' => 'nullable|string|max:4',
-            'phone_number' => 'nullable|string|max:20',
-            'current_address' => 'nullable|string',
-            'employment_status' => 'nullable|string|max:255',
-            'company_name' => 'nullable|string|max:255',
-            'position' => 'nullable|string|max:255',
-            'work_address' => 'nullable|string',
-            'industry_field' => 'nullable|string|max:255',
-            'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        // dd($request->graduation_year);
+
+        // $request->validate([
+        //     'graduation_year' => 'nullable|string|max:4',
+        //     'phone_number' => 'nullable|string|max:20',
+        //     'current_address' => 'nullable|string',
+        //     'employment_status' => 'nullable|string|max:255',
+        //     'company_name' => 'nullable|string|max:255',
+        //     'position' => 'nullable|string|max:255',
+        //     'work_address' => 'nullable|string',
+        //     'industry_field' => 'nullable|string|max:255',
+        //     'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // ]);
 
         $data = $request->all();
 
@@ -105,6 +109,7 @@ class AlumniDataController extends Controller
         }
 
         $alumniDatum->update($data);
+        // dd($data);
         return redirect()->route('alumni_data.index')->with('success', 'Data alumni berhasil diperbarui!');
     }
 

@@ -15,7 +15,7 @@
         <div class="container">
             @include('partials.sidebar')
 
-            <main class="content">
+            <main class="content min-h-screen">
                 @yield('content')
             </main>
         </div>

@@ -56,7 +56,8 @@ class SemesterReportController extends Controller
      */
     public function show(SemesterReport $semesterReport)
     {
-        // if ($semesterReport->user_id !== Auth::id()) {
+        // Otorisasi: Pastikan hanya pemilik laporan atau admin yang bisa melihatnya.
+        // if ($semesterReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
         //     abort(403); // Forbidden
         // }
         return view('semester_reports.show', compact('semesterReport'));
@@ -65,11 +66,14 @@ class SemesterReportController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, SemesterReport $semesterReport)
     {
-        if ($semesterReport->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // Cek otorisasi untuk memastikan pengguna yang login berhak mengedit data ini
+        // if ($semesterReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
+        //     abort(403);
+        // }
+        
+        // ✅ Tampilkan form edit di sini
         return view('semester_reports.edit', compact('semesterReport'));
     }
 
@@ -78,24 +82,37 @@ class SemesterReportController extends Controller
      */
     public function update(Request $request, SemesterReport $semesterReport)
     {
-        if ($semesterReport->user_id !== Auth::id()) {
-            abort(403);
-        }
+        // Cek otorisasi untuk memastikan pengguna yang login berhak mengedit data ini
+        // if ($semesterReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
+        //     abort(403);
+        // }
 
+        // ✅ Hapus return view di sini supaya proses lanjut
         $request->validate([
             'semester' => 'required|string|max:255',
             'ip' => 'required|numeric|min:0|max:4',
             'ipk' => 'required|numeric|min:0|max:4',
             'khs' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
-
-        $data = $request->all();
+        
+        $data = $request->all(); // Ambil semua data dari request
+    
         if ($request->hasFile('khs')) {
-            Storage::disk('public')->delete($semesterReport->khs_file_path);
+            // Hapus file lama jika ada
+            if ($semesterReport->khs_file_path) {
+                Storage::disk('public')->delete($semesterReport->khs_file_path);
+            }
             $data['khs_file_path'] = $request->file('khs')->store('khs', 'public');
         }
-
-        $semesterReport->update($data);
+    
+        // Lakukan update pada model
+        $semesterReport->update([
+            'semester' => $data['semester'],
+            'ip' => $data['ip'],
+            'ipk' => $data['ipk'],
+            'khs_file_path' => $data['khs_file_path'] ?? $semesterReport->khs_file_path,
+        ]);
+    
         return redirect()->route('semester_reports.index')->with('success', 'Laporan semester berhasil diperbarui!');
     }
 
@@ -104,12 +121,17 @@ class SemesterReportController extends Controller
      */
     public function destroy(SemesterReport $semesterReport)
     {
-        // if ($semesterReport->user_id !== Auth::id()) {
+        // Perbaiki otorisasi: Izinkan pemilik laporan ATAU admin untuk menghapus.
+        // if ($semesterReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
         //     abort(403);
         // }
-        Storage::disk('public')->delete($semesterReport->khs_file_path);
+
+        if ($semesterReport->khs_file_path) {
+            Storage::disk('public')->delete($semesterReport->khs_file_path);
+        } 
+
         $semesterReport->delete();
+
         return redirect()->route('semester_reports.index')->with('success', 'Laporan semester berhasil dihapus!');
-    
     }
 }
