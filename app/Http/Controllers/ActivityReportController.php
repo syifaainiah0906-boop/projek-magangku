@@ -14,20 +14,29 @@ class ActivityReportController extends Controller
      */
     public function index()
     {
+        // Get the search query from the request
         $search = request('search');
 
-        // Memulai query builder dengan eager loading untuk data user
+        // Start the query builder with eager loading for the user data
         $query = ActivityReport::with('user');
 
-        // Jika ada nilai search, tambahkan kondisi pencarian
+        // Check if the authenticated user is an admin
+        if (auth()->user()->role !== 'admin') {
+            // If not an admin, filter the reports to show only their own
+            $query->where('user_id', auth()->user()->id);
+        }
+
+        // Add search condition if a search value exists
         if ($search) {
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%');
             });
         }
 
-        // Ambil data laporan terbaru dengan paginasi
+        // Get the latest reports with pagination (10 per page)
         $reports = $query->latest()->paginate(10);
+
+        // Return the view with the reports data
         return view('activity_reports.index', compact('reports'));
     }
 

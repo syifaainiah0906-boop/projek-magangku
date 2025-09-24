@@ -31,12 +31,12 @@
 
     <div class="stats">
         <div>
-            <h3>18</h3>
-            <p>Mahasiswa Penerima</p>
+            <h3>Mahasiswa Penerima Beasiswa</h3>
+            <p><span id="mahasiswa-count">0</span></p>
         </div>
         <div>
-            <h3>12</h3>
-            <p>Alumni Terdaftar</p>
+            <h3>Alumni Terdaftar</h3>
+            <p><span id="alumni-count">0</span></p>
         </div>
         <div>
             <h3>1</h3>

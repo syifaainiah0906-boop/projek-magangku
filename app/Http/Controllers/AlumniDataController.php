@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\AlumniData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class AlumniDataController extends Controller
 {
@@ -16,8 +18,11 @@ class AlumniDataController extends Controller
     {
         $query = AlumniData::with('user');
 
+        if (auth()->user()->role !== 'admin') {
+            $query->where('user_id', auth()->user()->id);
+        }
 
-        $alumnis = AlumniData::with('user')->latest()->paginate(10);
+        $alumnis = $query->latest()->paginate(10);
         return view('alumni_data.index', compact('alumnis'));
     }
 
@@ -35,6 +40,10 @@ class AlumniDataController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'nim' => 'required|string|max:255',
+            'prodi' => 'required|string|max:255',
             'graduation_year' => 'nullable|string|max:4',
             'phone_number' => 'nullable|string|max:20',
             'current_address' => 'nullable|string',
@@ -42,12 +51,24 @@ class AlumniDataController extends Controller
             'company_name' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
             'work_address' => 'nullable|string',
-            'industry_field' => 'nullable|string|max:255',
+            'industry_field' => 'nullable|string|max:255|in:logistic,agro_forestry,energy,technology,education,consumer,investment',
+            'deskripsi' => 'nullable|string',
             'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         
+        // Buat data user baru
+        $user = User::create([
+            'name' => $request->nama,
+            'email' => $request->email,
+            'password' => Hash::make('Password123'),
+            'nim' => $request->nim,
+            'prodi' => $request->prodi,
+            'role' => 'alumni',
+        ]);
+
+        // Simpan data alumni, hubungkan dengan user yang baru dibuat
         $data = $request->all();
-        $data['user_id'] = Auth::id();
+        $data['user_id'] = $user->id;
 
         if ($request->hasFile('workplace_photo')) {
             $data['workplace_photo_path'] = $request->file('workplace_photo')->store('alumni_photos', 'public');
@@ -55,7 +76,7 @@ class AlumniDataController extends Controller
 
         AlumniData::create($data);
 
-        return redirect()->route('alumni_data.index')->with('success', 'Data alumni berhasil ditambahkan!');
+        return redirect()->route('alumni_data.index')->with('success', 'Data alumni dan akun baru berhasil ditambahkan!');
     }
 
     /**

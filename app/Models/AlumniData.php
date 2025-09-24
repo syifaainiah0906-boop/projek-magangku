@@ -22,6 +22,8 @@ class AlumniData extends Model
         'work_address',
         'industry_field',
         'workplace_photo_path',
+        'deskripsi',
+        'bidang_industri',
     ];
 
     public function user()

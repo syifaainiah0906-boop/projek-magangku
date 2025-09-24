@@ -87,7 +87,21 @@
 
         <div class="mb-4">
             <label for="industry_field" class="block text-gray-700 text-sm font-bold mb-2">Bidang Industri:</label>
-            <input type="text" name="industry_field" id="industry_field" value="{{ old('industry_field', $alumniDatum->industry_field) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <select name="industry_field" id="industry_field" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="" disabled>Pilih Bidang Industri</option>
+                <option value="logistic" @selected(old('industry_field', $alumniDatum->industry_field) == 'logistic')>Logistic</option>
+                <option value="agro_forestry" @selected(old('industry_field', $alumniDatum->industry_field) == 'agro_forestry')>Agro Forestry</option>
+                <option value="energy" @selected(old('industry_field', $alumniDatum->industry_field) == 'energy')>Energy</option>
+                <option value="technology" @selected(old('industry_field', $alumniDatum->industry_field) == 'technology')>Technology</option>
+                <option value="education" @selected(old('industry_field', $alumniDatum->industry_field) == 'education')>Education</option>
+                <option value="consumer" @selected(old('industry_field', $alumniDatum->industry_field) == 'consumer')>Consumer</option>
+                <option value="investment" @selected(old('industry_field', $alumniDatum->industry_field) == 'investment')>Investment</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="deskripsi" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
+            <input type="text" name="deskripsi" id="deskripsi" value="{{ old('deskripsi', $alumniDatum->deskripsi) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
         <div class="mb-4">
