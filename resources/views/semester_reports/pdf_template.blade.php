@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laporan Semester - {{ $semesterReport->activity_name }}</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 18px; color: #333; }
+        .section { margin-bottom: 20px; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+        .section-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .data-row { margin-bottom: 8px; }
+        .label { font-weight: bold; color: #555; width: 150px; display: inline-block; }
+        .value { display: inline-block; }
+        .description { margin-top: 15px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
+        .photo { text-align: center; margin-top: 20px; }
+        .photo img { max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>LAPORAN SEMESTER</h1>
+        <p>Tanggal Dibuat: {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">INFORMASI MAHASISWA</div>
+        <div class="data-row"><span class="label">Nama Lengkap:</span> <span class="value">{{ $semesterReport->user->name }}</span></div>
+        <div class="data-row"><span class="label">NIM:</span> <span class="value">{{ $semesterReport->user->nim }}</span></div>
+        <div class="data-row"><span class="label">Prodi:</span> <span class="value">{{ $semesterReport->user->prodi }}</span></div>
+        <div class="data-row"><span class="label">Semester:</span> <span class="value">{{ $semesterReport->semester }}</span></div>
+    </div>
+    
+    @if ($semesterReport->photo_file_path)
+    <div class="photo">
+        <div class="section-title">FOTO KHS</div>
+        {{-- CATATAN: Dompdf memerlukan path absolut (dengan http:// atau https://) untuk gambar --}}
+        <img src="{{ public_path('storage/' . $semesterReport->photo_file_path) }}" alt="Foto KHS">
+    </div>
+    @endif
+
+</body>
+</html>

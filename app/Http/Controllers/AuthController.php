@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Validation\ValidationException; // ✅ Tambahkan baris ini
 
 class AuthController extends Controller
 {
@@ -40,7 +40,7 @@ class AuthController extends Controller
             'nim' => $request->nim,
             'prodi' => $request->prodi,
             'password' => Hash::make($request->password),
-            'role' => 'user', // Atur role default sebagai 'user'
+            'role' => 'user',
         ]);
 
         // 3. Alihkan Pengguna Setelah Berhasil
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
     public function showLoginForm()
     {
-        return view('auth.login'); // Pastikan nama file blade Anda adalah login.blade.php
+        return view('auth.login');
     }
 
     public function login(Request $request)
@@ -67,8 +67,6 @@ class AuthController extends Controller
         // Coba autentikasi pengguna
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Redirect ke halaman dashboard atau halaman lain yang Anda inginkan
             return redirect()->intended('/dashboard');
         }
 

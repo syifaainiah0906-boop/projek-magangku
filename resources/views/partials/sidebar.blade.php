@@ -1,20 +1,25 @@
-<aside class="sidebar">
+<aside class="sidebar bg-white w-64 p-4">
     <h3>Menu</h3>
     <ul>
         <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <a href="{{ route('dashboard') }}">📊 Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="whitespace-nowrap">📊 Dashboard</a>
         </li>
         
         <li class="{{ request()->routeIs('activity_reports.index') ? 'active' : '' }}">
-            <a href="{{ route('activity_reports.index') }}">📑 Laporan Kegiatan</a>
+            <a href="{{ route('activity_reports.index') }}" class="whitespace-nowrap">📑 Laporan Kegiatan</a>
         </li>
 
         <li class="{{ request()->routeIs('semester_reports.index') ? 'active' : '' }}">
-            <a href="{{ route('semester_reports.index') }}">📑 Laporan Semester</a>
+            <a href="{{ route('semester_reports.index') }}" class="whitespace-nowrap">📑 Laporan Semester</a>
         </li>
+
+        <li class="{{ request()->routeIs('student_data.index') ? 'active' : '' }}">
+            <a href="{{ route('student_data.index') }}" class="whitespace-nowrap">🎓 Data Mahasiswa</a>
+        </li>
+        
         @if (Auth::user()->role !== 'user')
             <li class="{{ request()->routeIs('alumni_data.index') ? 'active' : '' }}">
-                <a href="{{ route('alumni_data.index') }}">👥 Data Alumni</a>
+                <a href="{{ route('alumni_data.index') }}" class="whitespace-nowrap">👥 Data Alumni</a>
             </li>
         @endif
     </ul>

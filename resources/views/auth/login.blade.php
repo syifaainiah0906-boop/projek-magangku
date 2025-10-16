@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIBAHAS</title>
+  <title>Login - SIBAHAS</title>
     <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- CSS -->
@@ -16,7 +16,7 @@
       <img src="{{ asset('images/logo.PNG') }}" alt="Logo Hasnur Group" class="logo">
     <img src="{{ asset('images/siluet.png') }}" alt="Siluet Wisuda" class="siluet">
       <h1>ACHIEVE HIGHER<br><span>Impact More</span></h1>
-      <p class="footer-text">HG Scholars</p>
+       <p style="font-size: 40px; font-weight: bold;">Hasnur Group Scholars</p>
     </div>
 
     <!-- Bagian Kanan -->

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\AlumniData;
+use App\Models\AlumniData; // Model yang benar: AlumniData
+// use App\Models\AlumniDatum; // BARIS INI DIHAPUS karena tidak ada Model ini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AlumniDataController extends Controller
 {
@@ -18,6 +20,7 @@ class AlumniDataController extends Controller
     {
         $query = AlumniData::with('user');
 
+        // Filter data: admin melihat semua, user biasa hanya melihat data miliknya
         if (auth()->user()->role !== 'admin') {
             $query->where('user_id', auth()->user()->id);
         }
@@ -40,10 +43,6 @@ class AlumniDataController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'nim' => 'required|string|max:255',
-            'prodi' => 'required|string|max:255',
             'graduation_year' => 'nullable|string|max:4',
             'phone_number' => 'nullable|string|max:20',
             'current_address' => 'nullable|string',
@@ -51,8 +50,7 @@ class AlumniDataController extends Controller
             'company_name' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
             'work_address' => 'nullable|string',
-            'industry_field' => 'nullable|string|max:255|in:logistic,agro_forestry,energy,technology,education,consumer,investment',
-            'deskripsi' => 'nullable|string',
+            'industry_field' => 'nullable|string|max:255',
             'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         
@@ -82,7 +80,7 @@ class AlumniDataController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AlumniData $alumniDatum)
+    public function show(AlumniData $alumniDatum) // Menggunakan AlumniData
     {
         // dd($alumniDatum->id);
         return view('alumni_data.show', compact('alumniDatum'));
@@ -91,7 +89,7 @@ class AlumniDataController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AlumniData $alumniDatum)
+    public function edit(AlumniData $alumniDatum) // Menggunakan AlumniData
     {
         // dd($alumniDatum->id);
         return view('alumni_data.edit', compact('alumniDatum'));
@@ -100,24 +98,24 @@ class AlumniDataController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AlumniData $alumniDatum)
+    public function update(Request $request, AlumniData $alumniDatum) // Menggunakan AlumniData
     {
         // if ($alumniDatum->user_id !== Auth::id()) {
-        //     abort(403);
+        //   abort(403);
         // }
 
         // dd($request->graduation_year);
 
         // $request->validate([
-        //     'graduation_year' => 'nullable|string|max:4',
-        //     'phone_number' => 'nullable|string|max:20',
-        //     'current_address' => 'nullable|string',
-        //     'employment_status' => 'nullable|string|max:255',
-        //     'company_name' => 'nullable|string|max:255',
-        //     'position' => 'nullable|string|max:255',
-        //     'work_address' => 'nullable|string',
-        //     'industry_field' => 'nullable|string|max:255',
-        //     'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //   'graduation_year' => 'nullable|string|max:4',
+        //   'phone_number' => 'nullable|string|max:20',
+        //   'current_address' => 'nullable|string',
+        //   'employment_status' => 'nullable|string|max:255',
+        //   'company_name' => 'nullable|string|max:255',
+        //   'position' => 'nullable|string|max:255',
+        //   'work_address' => 'nullable|string',
+        //   'industry_field' => 'nullable|string|max:255',
+        //   'workplace_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         // ]);
 
         $data = $request->all();
@@ -137,15 +135,52 @@ class AlumniDataController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AlumniData $alumniDatum)
+    public function destroy(AlumniData $alumniDatum) // UBAH TIPE HINT ke AlumniData dan nama variabel ke $alumniDatum
     {
-        if ($alumniDatum->user_id !== Auth::id()) {
-            abort(403);
+        // Otorisasi Penghapusan:
+        // Cek apakah user adalah admin. Jika tidak, blokir.
+        if (Auth::user()->role !== 'admin') {
+            // Kita juga bisa tambahkan kepemilikan data:
+            // if (Auth::user()->role !== 'admin' && $alumniDatum->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus data alumni.');
         }
+
+        // --- Lakukan penghapusan data ---
+        // Hapus file terkait (jika ada)
         if ($alumniDatum->workplace_photo_path) {
             Storage::disk('public')->delete($alumniDatum->workplace_photo_path);
         }
-        $alumniDatum->delete();
-        return redirect()->route('alumni_data.index')->with('success', 'Data alumni berhasil dihapus!');
+        
+        $alumniDatum->delete(); // Menggunakan $alumniDatum (variabel dari parameter)
+
+        return redirect()->route('alumni_data.index')->with('success', 'Data Alumni berhasil dihapus!');
+    }
+    
+    // ====================================================================
+    // METODE BARU: DOWNLOAD PDF
+    // ====================================================================
+
+    /**
+     * Membuat dan mengunduh laporan kegiatan yang spesifik sebagai PDF.
+     */
+    public function downloadPdf(AlumniData $alumniDatum) // Menggunakan AlumniData
+    {
+        // Otorisasi: Hanya Admin atau pemilik yang bisa mendownload
+        if (Auth::user()->role !== 'admin' && $alumniDatum->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Memuat relasi 'user' jika belum dimuat
+        $alumniDatum->load('user');
+
+        // Memuat view khusus PDF
+        $pdf = Pdf::loadView('alumni_data.pdf_template', compact('alumniDatum'));
+        
+        // Mengatur nama file
+        $userName = str_replace(' ', '_', $alumniDatum->user->name);
+        $fileName = 'Data_Alumni_' . $userName . '_' . $alumniDatum->id . '.pdf';
+
+        // Mengembalikan respons download
+        return $pdf->download($fileName);
     }
 }

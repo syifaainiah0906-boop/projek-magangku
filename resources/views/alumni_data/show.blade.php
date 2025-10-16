@@ -8,7 +8,7 @@
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
         
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-blue-900">Detail Data Alumni</h2>
+            <h2 class="text-2xl font-semibold text-blue-900">Data Alumni</h2>
             <a href="{{ route('alumni_data.index') }}" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
                 Kembali ke Daftar
             </a>
@@ -72,10 +72,10 @@
                 </div>
 
                 <div class="md:col-span-2 mt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Foto Alumni</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Foto Pekerjaan</h3>
                     <div class="w-full h-80 overflow-hidden rounded-lg shadow-md">
                         @if ($alumniDatum->workplace_photo_path)
-                            <img src="{{ Storage::url($alumniDatum->workplace_photo_path) }}" alt="Foto Kegiatan" class="w-full h-full object-cover">
+                            <img src="{{ Storage::url($alumniDatum->workplace_photo_path) }}" alt="Foto Pekerjaan" class="w-full h-full object-cover">
                         @else
                             <div class="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500">
                                 Foto tidak tersedia.
@@ -84,14 +84,22 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-2 mt-8 flex justify-end space-x-4">
+                 <div class="md:col-span-2 mt-8 flex justify-end space-x-4">
+                    
+                    {{-- TOMBOL DOWNLOAD PDF BARU --}}
+                    <a href="{{ route('alumni_data.download_pdf', $alumniDatum->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download Data Alumni
+                    </a>
+                    {{-- AKHIR TOMBOL DOWNLOAD PDF BARU --}}
+
                     <a href="{{ route('alumni_data.edit', $alumniDatum->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        Edit
+                        Update
                     </a>
                     <form action="{{ route('alumni_data.destroy', $alumniDatum->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700">
+                        @method('DELETE') {{-- Jangan lupa method DELETE --}}
+                        <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600">
                             Hapus
                         </button>
                     </form>

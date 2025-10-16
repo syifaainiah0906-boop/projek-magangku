@@ -4,27 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - SIBAHAS</title>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <!-- CSS -->
   <link rel="stylesheet" href="{{ asset('css/style-register.css') }}">
 </head>
 <body>
-  <!-- Bagian kiri -->
   <div class="left">
-    <img src="{{ asset('images/logo.PNG') }}" alt="Hasnur Group" class="logo-hg">
-
+      <img src="{{ asset('images/logo.PNG') }}" alt="Logo Hasnur Group" class="logo">
+      <img src="{{ asset('images/siluet.png') }}" alt="Graduates" class="siluet">
     <div class="text-wrapper">
-      <h1>ACHIEVE HIGHER</h1>
-      <p>Impact More</p>
-      <h3>HG Scholars</h3>
-    </div>
+      <h1>ACHIEVE HIGHER<br><span>Impact More</span></h1>   
+      </div>
 
-    <!-- ✅ Siluet dipisah, di paling bawah -->
     <img src="{{ asset('images/siluet.png') }}" alt="Graduates" class="siluet">
-        </div>
+    
+    <div class="footer-text-overlay">
+        Hasnur Group Scholars
+    </div>
+  </div>
 
-  <!-- Bagian kanan -->
   <div class="right">
     <div class="form-box">
       <h2>Daftar Akun</h2>

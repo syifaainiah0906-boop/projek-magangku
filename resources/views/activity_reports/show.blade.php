@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Mahasiswa')
+@section('title', 'Detail Laporan Kegiatan')
 
 @section('content')
 
@@ -55,7 +55,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="md:col-span-2 mt-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Uraian Kegiatan</h3>
                     <div class="p-4 bg-gray-50 rounded-lg">
@@ -75,20 +74,31 @@
                         @endif
                     </div>
                 </div>
-
+                
                 <div class="md:col-span-2 mt-8 flex justify-end space-x-4">
+                    
+                    {{-- TOMBOL DOWNLOAD PDF BARU --}}
+                    <a href="{{ route('activity_reports.download_pdf', $activityReport->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download PDF
+                    </a>
+                    {{-- AKHIR TOMBOL DOWNLOAD PDF BARU --}}
+
                     <a href="{{ route('activity_reports.edit', $activityReport->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
                         Update
                     </a>
                     <form action="{{ route('activity_reports.destroy', $activityReport->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
                         @csrf
+                        @method('DELETE') {{-- Jangan lupa method DELETE --}}
+                        <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600">
+                            Hapus
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 @endsection
 

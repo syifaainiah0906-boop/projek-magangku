@@ -6,42 +6,102 @@ use App\Models\ActivityReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class ActivityReportController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar laporan kegiatan.
      */
-    public function index()
-    {
-        // Get the search query from the request
-        $search = request('search');
+   public function index(Request $request)
+{
+    // Jika role admin → tampilkan semua data
+    if (auth()->user()->role === 'admin') {
+        $reports = \App\Models\ActivityReport::with('user')->orderBy('created_at', 'desc');
 
-        // Start the query builder with eager loading for the user data
-        $query = ActivityReport::with('user');
-
-        // Check if the authenticated user is an admin
-        if (auth()->user()->role !== 'admin') {
-            // If not an admin, filter the reports to show only their own
-            $query->where('user_id', auth()->user()->id);
-        }
-
-        // Add search condition if a search value exists
-        if ($search) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+        // Filter pencarian (opsional)
+        if ($request->filled('search')) {
+            $reports->whereHas('user', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('nim', 'like', '%' . $request->search . '%');
             });
         }
 
-        // Get the latest reports with pagination (10 per page)
-        $reports = $query->latest()->paginate(10);
+        // Filter semester (opsional)
+        if ($request->filled('semester')) {
+            $reports->whereHas('user', function ($query) use ($request) {
+                $query->where('semester', $request->semester);
+            });
+        }
 
-        // Return the view with the reports data
-        return view('activity_reports.index', compact('reports'));
+        // Filter tanggal (opsional)
+        if ($request->filled('start_date')) {
+            $reports->whereDate('activity_date', $request->start_date);
+        }
+
+        $reports = $reports->get();
+        $groupedReports = $reports->groupBy('user_id');
+    } else {
+        // Jika role user → tampilkan hanya data miliknya
+        $reports = \App\Models\ActivityReport::with('user')
+                    ->where('user_id', auth()->id())
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+        $groupedReports = $reports->groupBy('user_id');
+    }
+
+    return view('activity_reports.index', compact('groupedReports'));
+}
+
+
+
+
+    /**
+     * Mengambil jumlah laporan kegiatan per bulan via AJAX.
+     */
+    public function getMonthlyCount(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'count' => 'Error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+        $user = Auth::user();
+
+        $query = ActivityReport::query();
+
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
+
+        try {
+            $count = $query->whereMonth('activity_date', $month)
+                           ->whereYear('activity_date', $year)
+                           ->count();
+
+            return response()->json([
+                'count' => $count,
+                'bulan' => (int)$month,
+                'tahun' => (int)$year,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in getMonthlyCount: ' . $e->getMessage());
+            return response()->json([
+                'count' => 'Error',
+                'message' => 'Server failed to process query'
+            ], 500);
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Form tambah laporan kegiatan.
      */
     public function create()
     {
@@ -49,11 +109,11 @@ class ActivityReportController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan laporan kegiatan baru.
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'semester' => 'required|string|max:255',
             'activity_date' => 'required|date',
             'activity_name' => 'required|string|max:255',
@@ -62,97 +122,104 @@ class ActivityReportController extends Controller
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $path = $request->file('photo')->store('photos', 'public');
+        $validated['photo_file_path'] = $request->file('photo')->store('photos', 'public');
+        $validated['user_id'] = Auth::id();
 
-        ActivityReport::create([
-            'user_id' => Auth::id(),
-            'semester' => $request->semester,
-            'activity_date' => $request->activity_date,
-            'activity_name' => $request->activity_name,
-            'position' => $request->position,
-            'description' => $request->description,
-            'photo_file_path' => $path,
-        ]);
+        ActivityReport::create($validated);
 
-        return redirect()->route('activity_reports.index')->with('success', 'Laporan berhasil ditambahkan!');
+        return redirect()->route('activity_reports.index')
+            ->with('success', 'Laporan berhasil ditambahkan!');
     }
 
     /**
-     * Display the specified resource.
+     * Tampilkan detail laporan kegiatan.
      */
     public function show(ActivityReport $activityReport)
     {
-        // Pastikan pengguna hanya bisa melihat laporannya sendiri
-        // if ($activityReport->user_id !== Auth::id()) {
-        //     abort(403);
-        // }
+        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
         return view('activity_reports.show', compact('activityReport'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Form edit laporan kegiatan.
      */
     public function edit(ActivityReport $activityReport)
     {
-        // Periksa jika pengguna adalah admin ATAU pemilik laporan
-        // if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
-        //     abort(403);
-        // }
+        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
         return view('activity_reports.edit', compact('activityReport'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update laporan kegiatan.
      */
     public function update(Request $request, ActivityReport $activityReport)
     {
+        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    // Periksa jika pengguna adalah admin ATAU pemilik laporan
-    // if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
-    //     abort(403, 'Anda tidak memiliki hak untuk melakukan ini.');
-    // }
-
-        // Aturan validasi yang diperbarui
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'activity_name' => 'required|string|max:255',
             'activity_date' => 'required|date',
             'description' => 'required|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Jika ada foto baru diunggah
         if ($request->hasFile('photo')) {
-            // Hapus foto lama jika ada
             if ($activityReport->photo_file_path) {
                 Storage::disk('public')->delete($activityReport->photo_file_path);
             }
-            // Simpan foto baru dan update path
-            $validatedData['photo_file_path'] = $request->file('photo')->store('photos', 'public');
+
+            $validated['photo_file_path'] = $request->file('photo')->store('photos', 'public');
         }
 
-        // Perbarui data laporan
-        $activityReport->update($validatedData);
+        $activityReport->update($validated);
 
-        return redirect()->route('activity_reports.index')->with('success', 'Laporan berhasil diperbarui!');
+        return redirect()->route('activity_reports.index')
+            ->with('success', 'Laporan berhasil diperbarui!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus laporan kegiatan.
      */
     public function destroy(ActivityReport $activityReport)
     {
-        // Periksa jika pengguna adalah admin ATAU pemilik laporan
-        if ($activityReport->user_id !== Auth::id() && !Auth::user()->user_admin) {
-            abort(403);
+        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
-        // Hapus file foto terkait
         if ($activityReport->photo_file_path) {
             Storage::disk('public')->delete($activityReport->photo_file_path);
         }
 
         $activityReport->delete();
 
-        return redirect()->route('activity_reports.index')->with('success', 'Laporan berhasil dihapus!');
+        return redirect()->route('activity_reports.index')
+            ->with('success', 'Laporan berhasil dihapus!');
+    }
+
+    /**
+     * Download laporan kegiatan sebagai PDF.
+     */
+    public function downloadPdf(ActivityReport $activityReport)
+    {
+        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $activityReport->load('user');
+
+        $pdf = Pdf::loadView('activity_reports.pdf_template', compact('activityReport'));
+
+        $userName = str_replace(' ', '_', $activityReport->user->name);
+        $fileName = "Laporan_Kegiatan_{$userName}_{$activityReport->id}.pdf";
+
+        return $pdf->download($fileName);
     }
 }
