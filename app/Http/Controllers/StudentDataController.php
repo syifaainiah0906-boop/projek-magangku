@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AlumniData;
 use App\Models\User;
 
 class StudentDataController extends Controller
@@ -12,7 +13,7 @@ class StudentDataController extends Controller
     // ==============================
     public function index(Request $request)
 {
-    $user = auth()->user();
+    $user = $request->user();
 
     if ($user->role === 'admin') {
         $search = $request->get('search');
@@ -71,33 +72,15 @@ class StudentDataController extends Controller
     // ==============================
     // FORM EDIT DATA DIRI
     // ==============================
-   public function edit($id = null)
+   public function edit($id)
     {
-        $auth = auth()->user();
-
-        if ($id) {
-            // hanya admin boleh edit user lain
-            if ($auth->role !== 'admin') {
-                abort(403, 'Akses ditolak');
-            }
-            $user = User::findOrFail($id);
-        } else {
-            $user = $auth;
+        $mahasiswa = User::findOrFail($id);
+        
+        if (auth()->user()->role !== 'admin' && auth()->id() !== $mahasiswa->id) {
+            abort(403, 'Akses ditolak');
         }
 
-        $daftarProdi = [
-            'D3 Teknik Otomotif',
-            'D3 Teknik Informatika',
-            'D3 Budidaya Tanaman Perkebunan',
-            'D4 Bisnis Digital',
-            'D4 Akuntansi Bisnis Digital',
-            'D4 Manajemen Pemasaran Internasional',
-            'D4 Teknologi Rekayasa Multimedia',
-        ];
-
-        $daftarTahun = range(2020, now()->year);
-
-        return view('student_data.edit', compact('user', 'daftarProdi', 'daftarTahun'));
+        return view('student_data.edit', compact('mahasiswa'));
     }
 
     // ==============================
@@ -105,10 +88,7 @@ class StudentDataController extends Controller
     // ==============================
     public function update(Request $request, $id)
     {
-        $auth = auth()->user();
-
-        // hanya admin boleh mengupdate data mahasiswa lain
-        if ($auth->role !== 'admin') {
+        if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses ditolak');
         }
 
@@ -142,6 +122,14 @@ class StudentDataController extends Controller
         if ($request->filled('role')) {
             $updateData['role'] = $request->role;
     }
+
+        // Cek jika role diubah menjadi 'alumni'
+        if ($request->filled('role') && $request->role === 'alumni' && $user->role !== 'alumni') {
+            // Buat data alumni baru jika belum ada
+            AlumniData::firstOrCreate(
+                ['user_id' => $user->id]
+            );
+        }
 
         $user->update($updateData);
 
