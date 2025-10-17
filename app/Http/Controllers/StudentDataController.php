@@ -20,7 +20,8 @@ class StudentDataController extends Controller
         $prodi = $request->get('prodi');
         $tahun = $request->get('tahun'); // ubah dari 'angkatan' ke 'tahun'
 
-        $query = User::query()->where('role', '!=', 'admin');
+        // Ubah query agar hanya mengambil pengguna dengan role 'user'
+        $query = User::query()->where('role', 'user');
 
         // 🔍 Filter pencarian nama / NIM
         if ($search) {
