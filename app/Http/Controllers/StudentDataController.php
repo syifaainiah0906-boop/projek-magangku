@@ -127,6 +127,7 @@ class StudentDataController extends Controller
         if (!empty($request->nim) && strlen($request->nim) >= 2) {
             $angkatan = '20' . substr($request->nim, 0, 2);
         }
+        $roleBefore = $user->role;
 
         $updateData = [
             'name' => $request->name,
@@ -136,12 +137,85 @@ class StudentDataController extends Controller
             'prodi' => $request->prodi,
         ];
 
-        // Jika role diberikan, perbarui juga
+        // Cek jika role berubah menjadi alumni
+       
         if ($request->filled('role')) {
             $updateData['role'] = $request->role;
-        }
+    }
 
         $user->update($updateData);
+
+        // ==============================
+// LOGIKA PINDAH KE ALUMNI OTOMATIS
+// ==============================
+if ($roleBefore !== 'alumni' && $request->role === 'alumni') {
+
+    // Ambil data mahasiswa terkait user
+    $mahasiswaData = \App\Models\MahasiswaData::where('user_id', $user->id)->first();
+
+    if ($mahasiswaData) {
+
+        // Cek apakah data alumni sudah ada
+        $existingAlumni = \App\Models\AlumniData::where('user_id', $user->id)->first();
+
+        if (!$existingAlumni) {
+
+            // Ambil angkatan dari MahasiswaData, jika kosong coba dari NIM user
+            $graduation_year = $mahasiswaData->angkatan;
+            if (empty($graduation_year) && !empty($user->nim) && strlen($user->nim) >= 2) {
+                $graduation_year = '20' . substr($user->nim, 0, 2);
+            }
+
+            // Buat data alumni
+            \App\Models\AlumniData::create([
+                'user_id' => $user->id,
+                'graduation_year' => $graduation_year,
+                'phone_number' => null,
+                'current_address' => null,
+                'employment_status' => null,
+                'company_name' => null,
+                'position' => null,
+                'work_address' => null,
+                'industry_field' => null,
+                'workplace_photo_path' => null,
+                'deskripsi' => null,
+                'bidang_industri' => null,
+            ]);
+
+            // Opsional: hapus data mahasiswa agar tidak double
+            $mahasiswaData->delete();
+        }
+    } else {
+        // Kalau MahasiswaData tidak ditemukan, buat alumni tetap dari data user
+        $graduation_year = !empty($user->nim) && strlen($user->nim) >= 2 ? '20' . substr($user->nim, 0, 2) : null;
+
+        $existingAlumni = \App\Models\AlumniData::where('user_id', $user->id)->first();
+        if (!$existingAlumni) {
+            \App\Models\AlumniData::create([
+                'user_id' => $user->id,
+                'graduation_year' => $graduation_year,
+                'phone_number' => null,
+                'current_address' => null,
+                'employment_status' => null,
+                'company_name' => null,
+                'position' => null,
+                'work_address' => null,
+                'industry_field' => null,
+                'workplace_photo_path' => null,
+                'deskripsi' => null,
+                'bidang_industri' => null,
+            ]);
+        }
+    }
+
+    // Pastikan role user tetap di-update
+    $user->role = 'alumni';
+    $user->save();
+
+        // Hapus semua data mahasiswa terkait user
+\App\Models\MahasiswaData::where('user_id', $user->id)->delete();
+
+}
 
         return redirect()->route('student_data.index')->with('success', 'Data berhasil diperbarui!');
     }

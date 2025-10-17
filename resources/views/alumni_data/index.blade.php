@@ -36,9 +36,7 @@
             
             {{-- Tombol Tambah Data --}}
             @if (Auth::user()->role === 'admin')
-                <a href="{{ route('alumni_data.create') }}" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 text-center ml-0 md:ml-4">
-                    Tambah Data Alumni
-                </a>
+                
             @endif
         </div>
 
