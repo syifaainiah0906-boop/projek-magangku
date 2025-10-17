@@ -57,11 +57,9 @@ Route::middleware(['auth'])->group(function () {
     // Data Mahasiswa
     // ============================
     Route::get('/student-data', [StudentDataController::class, 'index'])->name('student_data.index');
-    Route::put('/student-data/{id}/update-prodi', [StudentDataController::class, 'updateProdi'])->name('student_data.updateProdi');
-    Route::put('/student-data/{id}/update-angkatan', [StudentDataController::class, 'updateAngkatan'])->name('student_data.updateAngkatan');
-    // Route::get('/student-data/edit', [StudentDataController::class, 'edit'])->name('student_data.edit');
     Route::put('/student-data/{id}', [StudentDataController::class, 'update'])->name('student_data.update');
     Route::get('/student-data/{id}', [StudentDataController::class, 'show'])->name('student_data.show');
+    Route::get('/student-data/{id}/edit', [StudentDataController::class, 'edit'])->name('student_data.edit');
 
     // ============================
     // Laporan Semester

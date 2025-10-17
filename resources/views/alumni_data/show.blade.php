@@ -1,117 +1,107 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Mahasiswa')
+@section('title', 'Detail Alumni - SIBAHAS')
 
 @section('content')
 
-<div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
-        
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-blue-900">Data Alumni</h2>
-            <a href="{{ route('alumni_data.index') }}" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                Kembali ke Daftar
-            </a>
+<div class="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
+    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl p-10 border border-blue-100">
+        {{-- Header --}}
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-800 tracking-wide">Profil Alumni</h1>
+            <p class="text-gray-500 mt-2 text-sm">Informasi lengkap mengenai data alumni.</p>
         </div>
-        
-        <div class="border-t border-gray-200 pt-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Data Alumni</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Nama Lengkap</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->user->name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">NIM</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->user->nim }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Prodi</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->user->prodi }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Tahun Lulus</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->graduation_year }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Posisi / Jabatan</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->position }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Alamat Pekerjaan</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->work_address }}</p>
-                        </div>
-                    </div>
+
+        {{-- Main Content Grid --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+
+            {{-- Left Panel: Profile Picture & Basic Info --}}
+            <div class="md:col-span-1 flex flex-col items-center text-center">
+                <div class="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center mb-4 border-4 border-white shadow-md">
+                    {{-- Placeholder Icon --}}
+                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
                 </div>
-
-                <div>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Nomor HP</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->phone_number }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Alamat Sekarang</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->current_address }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Status Pekerjaan</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->employment_status }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Nama Perusahaan</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->company_name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Bidang Industri</p>
-                            <p class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->industry_field }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2 mt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Foto Pekerjaan</h3>
-                    <div class="w-full h-80 overflow-hidden rounded-lg shadow-md">
-                        @if ($alumniDatum->workplace_photo_path)
-                            <img src="{{ Storage::url($alumniDatum->workplace_photo_path) }}" alt="Foto Pekerjaan" class="w-full h-full object-cover">
-                        @else
-                            <div class="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500">
-                                Foto tidak tersedia.
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                 <div class="md:col-span-2 mt-8 flex justify-end space-x-4">
-                    
-                    {{-- TOMBOL DOWNLOAD PDF BARU --}}
-                    <a href="{{ route('alumni_data.download_pdf', $alumniDatum->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Download Data Alumni
-                    </a>
-                    {{-- AKHIR TOMBOL DOWNLOAD PDF BARU --}}
-
-                    <a href="{{ route('alumni_data.edit', $alumniDatum->id) }}" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        Update
-                    </a>
-                    <form action="{{ route('alumni_data.destroy', $alumniDatum->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
-                        @csrf
-                        @method('DELETE') {{-- Jangan lupa method DELETE --}}
-                        <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-gray-500 rounded-lg hover:bg-gray-600">
-                            Hapus
-                        </button>
-                    </form>
+                <h2 class="text-xl font-bold text-gray-800">{{ $alumniDatum->user->name }}</h2>
+                <p class="text-sm text-gray-500 mt-1">{{ $alumniDatum->user->email }}</p>
+                <div class="mt-4 text-left space-y-2 text-sm w-full bg-gray-50 p-4 rounded-lg border">
+                    <p><strong>NIM:</strong> {{ $alumniDatum->user->nim ?? '-' }}</p>
+                    <p><strong>Prodi:</strong> {{ $alumniDatum->user->prodi ?? '-' }}</p>
+                    <p><strong>Lulus:</strong> {{ $alumniDatum->graduation_year ?? '-' }}</p>
                 </div>
             </div>
+
+            {{-- Right Panel: Detailed Info --}}
+            <div class="md:col-span-2">
+                <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-8 pt-6 md:pt-0">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Pekerjaan & Kontak</h3>
+                    <dl class="space-y-5">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Status Pekerjaan</dt>
+                            <dd class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->employment_status ?? '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Perusahaan & Posisi</dt>
+                            <dd class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->company_name ?? '-' }} - <span class="font-normal">{{ $alumniDatum->position ?? '-' }}</span></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Bidang Industri</dt>
+                            <dd class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->industry_field ?? '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Nomor HP</dt>
+                            <dd class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->phone_number ?? '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Alamat Sekarang</dt>
+                            <dd class="mt-1 text-base font-semibold text-gray-900">{{ $alumniDatum->current_address ?? '-' }}</dd>
+                        </div>
+                    </dl>
+
+                    {{-- Workplace Photo --}}
+                    <div class="mt-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Foto Tempat Kerja</h3>
+                        <div class="w-full h-60 overflow-hidden rounded-lg shadow-md border">
+                            @if ($alumniDatum->workplace_photo_path)
+                                <img src="{{ Storage::url($alumniDatum->workplace_photo_path) }}" alt="Foto Pekerjaan" class="w-full h-full object-cover">
+                            @else
+                                <div class="flex items-center justify-center w-full h-full bg-gray-100 text-gray-500">
+                                    Foto tidak tersedia.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tombol Aksi --}}
+        <div class="mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-center items-center gap-4">
+            <a href="{{ route('alumni_data.index') }}"
+                class="w-full md:w-auto inline-flex justify-center items-center px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium text-sm">
+                ← Kembali ke Daftar
+            </a>
+            @if(auth()->user()->role === 'admin')
+                <a href="{{ route('alumni_data.edit', $alumniDatum->id) }}"
+                    class="w-full md:w-auto inline-flex justify-center items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                    Edit Data
+                </a>
+                <form action="{{ route('alumni_data.destroy', $alumniDatum->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data alumni ini?');" class="w-full md:w-auto">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full inline-flex justify-center items-center px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Hapus
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 </div>
 
-
 @endsection
 
 @push('scripts')
-
 @endpush

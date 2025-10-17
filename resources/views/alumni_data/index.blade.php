@@ -6,9 +6,11 @@
 
 <div class="flex flex-col items-center p-4 bg-gray-100/0">
     <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-7xl mx-auto my-12">
-        <h3 class="text-xl font-bold text-gray-800 mb-6 text-center tracking-wider">
-            ALUMNI DATA 
-        </h3>
+        {{-- Header --}}
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-blue-800 tracking-wide">Data Alumni</h1>
+            <p class="text-gray-500 mt-2 text-sm">Kelola dan lihat data alumni penerima beasiswa.</p>
+        </div>
 
         {{-- Notifikasi Sukses --}}
         @if (session('success'))
@@ -17,69 +19,63 @@
             </div>
         @endif
 
-        {{-- Baris Pencarian dan Tombol (Disesuaikan agar lebih rapat dan sesuai) --}}
-        <div class="flex flex-col md:flex-row items-center justify-between mb-8 space-y-4 md:space-y-0">
-            
-            {{-- BLOK 1: Search Bar (Gabungan Input Nama dan Tombol Search) --}}
-            {{-- Ini adalah blok lebar yang menggabungkan input nama dan tombol search --}}
-            <form action="{{ route('alumni_data.index') }}" method="GET" class="w-2/3 flex items-center bg-blue-500 rounded-full overflow-hidden shadow-lg">
-                {{-- Input Pencarian Nama --}}
-                <input type="text" name="search" value="{{ request('search') }}" 
-                    placeholder="Cari nama alumni..." 
-                    class="w-full py-3 px-6 text-white bg-blue-600 placeholder-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                {{-- Tombol Search/Submit --}}
-                <button type="submit" class="px-6 py-3 bg-yellow-400 text-blue-900 hover:bg-yellow-500 transition duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
+        {{-- Area Aksi dan Pencarian --}}
+        <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+            {{-- Form Pencarian --}}
+            <form action="{{ route('alumni_data.index') }}" method="GET" class="w-full md:w-1/2 lg:w-1/3">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari nama atau NIM alumni..."
+                        class="w-full pl-10 pr-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
             </form>
-            
-            {{-- Tombol Tambah Data --}}
+
+            {{-- Tombol Tambah Data (hanya untuk admin) --}}
             @if (Auth::user()->role === 'admin')
-                <a href="{{ route('alumni_data.create') }}" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 text-center ml-0 md:ml-4">
-                    Tambah Data Alumni
+                <a href="{{ route('alumni_data.create') }}" class="w-full md:w-auto px-5 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 transition text-center">
+                    + Tambah Data
                 </a>
             @endif
         </div>
 
         {{-- Tabel Data --}}
-        <div class="overflow-x-auto relative shadow-md sm:rounded-lg border border-gray-200">
-            <table class="w-full text-sm text-left text-gray-600">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50"> 
+        <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+            <table class="min-w-full divide-y divide-gray-200 text-sm text-gray-700">
+                <thead class="bg-gray-100">
                     <tr>
-                        <th scope="col" class="py-3 px-6">No</th>
-                        <th scope="col" class="py-3 px-6">NIM</th>
-                        <th scope="col" class="py-3 px-6">Nama</th>
-                        <th scope="col" class="py-3 px-6">Prodi</th>
-                        <th scope="col" class="py-3 px-6">Tahun Lulus</th>
-                        <th scope="col" class="py-3 px-6">Status Pekerjaan</th>
-                        <th scope="col" class="py-3 px-6">Aksi</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">No</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">Nama</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">NIM</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">Prodi</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">Tahun Lulus</th>
+                        <th class="px-6 py-4 text-left font-semibold text-gray-600">Status Pekerjaan</th>
+                        <th class="px-6 py-4 text-center font-semibold text-gray-600">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100 bg-white">
                     @forelse ($alumnis as $alumni)
-                        <tr class="bg-white border-b hover:bg-gray-50 transition duration-150 ease-in-out">
-                            <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
-                                {{ $alumnis->firstItem() + $loop->index }}
-                            </td>
+                        <tr class="hover:bg-blue-50 transition">
+                            <td class="px-6 py-4">{{ $alumnis->firstItem() + $loop->index }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900">{{ $alumni->user->name ?? 'N/A' }}</td>
                             <td class="py-4 px-6">{{ $alumni->user->nim ?? 'N/A' }}</td>
-                            <td class="py-4 px-6">{{ $alumni->user->name ?? 'N/A' }}</td>
                             <td class="py-4 px-6">{{ $alumni->user->prodi ?? 'N/A' }}</td>
                             <td class="py-4 px-6">{{ $alumni->graduation_year ?? '-' }}</td>
                             <td class="py-4 px-6">{{ $alumni->employment_status ?? '-' }}</td>
                             
-                            {{-- KOLOM AKSI: Menghilangkan tombol Edit --}}
-                            <td class="py-4 px-6 flex space-x-2">
-                                <a href="{{ route('alumni_data.show', $alumni->id) }}" class="font-medium text-blue-600 hover:text-blue-800 transition duration-150">Lihat</a>
-                                
-                                {{-- Blok Edit Dihilangkan: Garis pemisah dan tombol Edit tidak ada lagi --}}
+                            <td class="py-4 px-6 text-center">
+                                <a href="{{ route('alumni_data.show', $alumni->id) }}" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition">
+                                    Detail
+                                </a>
                             </td>
                         </tr>
                     @empty
-                        <tr class="bg-white border-b">
+                        <tr>
                             <td colspan="7" class="py-6 px-6 text-center text-gray-500 font-medium">
                                 @if (request('search'))
-                                    **Mahasiswa tidak ditemukan.**
+                                    Data alumni tidak ditemukan untuk pencarian "{{ request('search') }}".
                                 @else
                                     Tidak ada data alumni yang ditemukan.
                                 @endif
@@ -91,8 +87,8 @@
         </div>
 
         {{-- Pagination --}}
-        <div class="mt-8 flex justify-center">
-            {{ $alumnis->links() }} 
+        <div class="mt-6">
+            {{ $alumnis->appends(request()->query())->links() }}
         </div>
     </div>
 </div>
