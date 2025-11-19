@@ -16,13 +16,12 @@ class MahasiswaData extends Model
         'nim',
         'prodi',
         'angkatan',
-        'user_id', // tambahkan ini jika kolom ini ada di tabel
+        'user_id',
     ];
 
-    // 🔹 Tambahkan relasi ke tabel users
+    // Relasi ke tabel users
     public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
-
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

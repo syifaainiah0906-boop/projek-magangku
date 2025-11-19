@@ -16,6 +16,7 @@ class AlumniData extends Model
         'graduation_year',
         'phone_number',
         'current_address',
+        'village',
         'employment_status',
         'company_name',
         'position',

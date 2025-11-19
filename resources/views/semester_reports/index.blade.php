@@ -14,111 +14,145 @@
         </div>
 
         {{-- Area Aksi dan Filter --}}
-        <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-            @if (Auth::user()->role === 'admin')
-                {{-- Form Filter untuk Admin --}}
-                <form action="{{ route('semester_reports.index') }}" method="GET" class="w-full flex flex-col md:flex-row gap-4">
-                    {{-- Input Pencarian --}}
-                    <div class="relative flex-grow">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari nama mahasiswa..."
-                            class="w-full pl-10 pr-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    {{-- Select Semester --}}
-                    <select name="semester" class="w-full md:w-auto px-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Semua Semester</option>
-                        @for ($i = 1; $i <= 8; $i++)
-                            <option value="{{ $i }}" {{ request('semester') == $i ? 'selected' : '' }}>
-                                Semester {{ $i }}
-                            </option>
-                        @endfor
-                    </select>
-                    {{-- Tombol Filter --}}
-                    <button type="submit" class="w-full md:w-auto px-5 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 transition text-center">
-                        Filter
-                    </button>
-                </form>
-            @else
-                {{-- Tombol Tambah untuk User --}}
-                <div class="w-full flex justify-end">
-                    <a href="{{ route('semester_reports.create') }}" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 transition text-center">
-                        + Tambah Laporan
-                    </a>
-                </div>
-            @endif
-        </div>
+<div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+    @if (Auth::user()->role === 'admin')
+        <form action="{{ route('semester_reports.index') }}" method="GET" 
+              class="w-full bg-gray-50 p-5 rounded-xl flex flex-wrap gap-4 items-end">
 
-        {{-- Pesan filter aktif --}}
-        @if(request('semester') || request('search'))
-            <div class="mb-4 text-sm text-gray-600 italic">
-                Menampilkan laporan yang difilter.
-                <a href="{{ route('semester_reports.index') }}" class="text-red-500 hover:underline ml-2">Hapus Filter</a>
+            {{-- Cari Nama / NIM --}}
+            <div class="flex flex-col flex-grow">
+                <label class="text-sm font-semibold text-gray-700 mb-1">Cari Nama / NIM</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-400">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="search" placeholder="Masukkan nama atau NIM..."
+                        value="{{ request('search') }}"
+                        class="pl-10 pr-4 py-2 border-gray-300 rounded-md shadow focus:ring-blue-500 focus:border-blue-500 w-full">
+                </div>
             </div>
-        @endif
+
+           {{-- Filter Tahun --}}
+<div class="flex flex-col">
+    <label class="text-sm font-semibold text-gray-700 mb-1">Tahun</label>
+    <select name="tahun"
+            class="w-40 py-2 border-gray-300 rounded-md shadow focus:ring-blue-500 focus:border-blue-500">
+        <option value="" {{ request('tahun') == '' ? 'selected' : '' }}>Pilih Tahun</option>
+        @foreach ($daftarTahun as $tahun)
+            <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                {{ $tahun }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
+            {{-- Filter Semester --}}
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-700 mb-1">Semester</label>
+                <select name="semester" 
+                        class="w-44 py-2 border-gray-300 rounded-md shadow focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Semua Semester</option>
+                    @for ($i = 1; $i <= 8; $i++)
+                        <option value="{{ $i }}" {{ request('semester') == $i ? 'selected' : '' }}>
+                            Semester {{ $i }}
+                        </option>
+                    @endfor
+                </select>
+            </div>
+
+           <div class="flex space-x-2">
+
+    {{-- Tombol Filter --}}
+    <button type="submit"
+        class="w-full px-4 py-2 bg-blue-100 text-blue-600 rounded-full 
+               text-sm hover:bg-blue-200 transition font-medium">
+        Filter
+    </button>
+
+    {{-- Tombol Reset --}}
+    <a href="{{ route('student_data.index') }}"
+        class="px-4 py-2 bg-blue-100 text-blue-600 rounded-full 
+               text-sm hover:bg-blue-200 transition font-medium">
+        Reset
+    </a>
+
+</div>
+
+        </form>
+    @elseif (Auth::user()->role === 'user')
+        {{-- Tombol Tambah hanya untuk Mahasiswa --}}
+        <div class="w-full flex justify-end">
+            <a href="{{ route('semester_reports.create') }}"
+                class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition text-center">
+                + Tambah Laporan
+            </a>
+        </div>
+    @endif
+</div>
 
         {{-- TABEL LAPORAN --}}
-        <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+        <div class="overflow-x-visible rounded-lg border border-gray-200 shadow-md relative">
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="bg-gray-100 text-xs text-gray-600 uppercase font-semibold">
                     <tr>
-                        <th scope="col" class="py-3 px-6">No</th>
-                        <th scope="col" class="py-3 px-6">NIM</th>
-                        <th scope="col" class="py-3 px-6">Nama</th>
-                        <th scope="col" class="py-3 px-6">Prodi</th>
-                        <th scope="col" class="py-3 px-6">
+                        <th class="py-3 px-6">No</th>
+                        <th class="py-3 px-6">NIM</th>
+                        <th class="py-3 px-6">Nama</th>
+                        <th class="py-3 px-6">Prodi</th>
+                        <th class="py-3 px-6 text-center">
                             @if(Auth::user()->role === 'admin') Laporan Tersedia @else Semester & IPK @endif
                         </th>
                     </tr>
                 </thead>
+
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @php $no = 1; @endphp
+
                     @forelse ($groupedReports as $userId => $reportsGroup)
                         @php $mahasiswa = $reportsGroup->first()->user; @endphp
 
-                        {{-- Role Admin tetap seperti sebelumnya --}}
+                        {{-- Role Admin --}}
                         @if(Auth::user()->role === 'admin')
                             <tr class="hover:bg-blue-50 transition">
                                 <td class="px-6 py-4">{{ $no++ }}</td>
                                 <td class="py-4 px-6">{{ $mahasiswa->nim ?? 'N/A' }}</td>
                                 <td class="py-4 px-6 font-medium text-gray-900">{{ $mahasiswa->name ?? 'N/A' }}</td>
                                 <td class="py-4 px-6">{{ $mahasiswa->prodi ?? 'N/A' }}</td>
-                                
-                                <td class="py-4 px-6">
+                                <td class="py-4 px-6 text-center">
                                     <div x-data="{ open: false }" class="relative inline-block text-left">
+                                        {{-- Tombol seragam dengan "Detail" --}}
                                         <button 
-                                            @click="open = !open" 
+                                            @click="open = !open"
                                             type="button"
-                                            class="inline-flex items-center justify-center rounded-full border border-gray-300 shadow-sm px-4 py-1 
-                                                bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none 
-                                                focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            class="inline-flex items-center justify-center rounded-full px-4 py-1
+                                                bg-blue-100 text-blue-700 text-xs font-medium hover:bg-blue-200
+                                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
                                         >
                                             Lihat Laporan
-                                            <svg class="-mr-1 ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg class="ml-1 w-3 h-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                                       d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </button>
 
+                                        {{-- Dropdown --}}
                                         <div 
                                             x-show="open"
                                             x-cloak
                                             @click.outside="open = false"
-                                            x-transition:enter="transition ease-out duration-100"
-                                            x-transition:enter-start="transform opacity-0 scale-95"
-                                            x-transition:enter-end="transform opacity-100 scale-100"
-                                            x-transition:leave="transition ease-in duration-75"
-                                            x-transition:leave-start="transform opacity-100 scale-100"
-                                            x-transition:leave-end="transform opacity-0 scale-95"
-                                            class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white 
-                                                   ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                                            x-transition:enter="transition ease-out duration-150"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-100"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-95"
+                                            class="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                         >
                                             <div class="py-1">
                                                 @foreach ($reportsGroup->sortBy('semester') as $report)
-                                                    <a href="{{ route('semester_reports.show', $report->id) }}" 
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                                    <a href="{{ route('semester_reports.show', $report->id) }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-700">
                                                         Semester {{ $report->semester }} (IPK {{ $report->ipk }})
                                                     </a>
                                                 @endforeach
@@ -129,23 +163,24 @@
                             </tr>
                         @endif
 
-                        {{-- Role User: langsung tampil semua laporan per semester --}}
-                        @if(Auth::user()->role === 'user')
+                        {{-- Role User (Mahasiswa) & Alumni --}}
+                        @if(Auth::user()->role === 'user' || Auth::user()->role === 'alumni')
                             @foreach ($reportsGroup->sortBy('semester') as $report)
                                 <tr class="hover:bg-blue-50 transition">
                                     <td class="px-6 py-4">{{ $no++ }}</td>
                                     <td class="py-4 px-6">{{ $mahasiswa->nim ?? 'N/A' }}</td>
                                     <td class="py-4 px-6 font-medium text-gray-900">{{ $mahasiswa->name ?? 'N/A' }}</td>
                                     <td class="py-4 px-6">{{ $mahasiswa->prodi ?? 'N/A' }}</td>
-                                    <td class="py-4 px-6">
-                                        <a href="{{ route('semester_reports.show', $report->id) }}" 
-                                           class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition">
+                                    <td class="py-4 px-6 text-center">
+                                        <a href="{{ route('semester_reports.show', $report->id) }}"
+                                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition">
                                             Semester {{ $report->semester }} (IPK {{ $report->ipk }})
                                         </a>
                                     </td>
                                 </tr>
                             @endforeach
                         @endif
+
 
                     @empty
                         <tr>
@@ -162,7 +197,7 @@
 
 @endsection
 
-{{-- PENTING: Pastikan Alpine.js dimuat dengan benar --}}
+{{-- Alpine.js untuk dropdown --}}
 @push('scripts')
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @endpush

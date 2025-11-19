@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Detail Mahasiswa - SIBAHAS')
@@ -43,7 +42,9 @@
 
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Angkatan</dt>
-                            <dd class="mt-1 text-lg font-semibold text-gray-900">{{ $mahasiswa->angkatan ?? '-' }}</dd>
+                            <dd class="mt-1 text-lg font-semibold text-gray-900">
+                                {{ $mahasiswa->angkatan ?? ('20' . substr($mahasiswa->nim, 0, 2)) }}
+                            </dd>
                         </div>
 
                         <div>
@@ -55,6 +56,7 @@
                                 </span>
                             </dd>
                         </div>
+
                     </dl>
                 </div>
             </div>
@@ -62,19 +64,52 @@
 
         {{-- Tombol Aksi --}}
         <div class="mt-12 pt-6 border-t border-gray-200 flex justify-center gap-4">
+
+            {{-- Tombol Kembali --}}
             <a href="{{ route('student_data.index') }}"
-                class="inline-flex items-center px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium text-sm">
-                ← Kembali
+                class="inline-flex items-center justify-center px-6 py-2
+                       bg-gray-100 text-gray-700 rounded-full border border-gray-300
+                       hover:bg-gray-200 transition font-medium text-sm shadow-sm">
+               ← Kembali
             </a>
 
             @if(auth()->user()->role === 'admin')
+
+                {{-- Tombol Edit --}}
                 <a href="{{ route('student_data.edit', $mahasiswa->id) }}"
-                    class="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                    class="inline-flex items-center justify-center px-6 py-2 
+                           bg-blue-600 text-white rounded-full hover:bg-blue-700 transition 
+                           font-medium text-sm shadow-md">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z">
+                        </path>
+                    </svg>
                     Edit Data
                 </a>
+
+                {{-- Tombol Hapus --}}
+                <form action="{{ route('student_data.destroy', $mahasiswa->id) }}" 
+                      method="POST"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="inline-flex items-center justify-center px-6 py-2 
+                               bg-red-600 text-white rounded-full hover:bg-red-700 transition 
+                               font-medium text-sm shadow-md">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Hapus
+                    </button>
+                </form>
+
             @endif
+
         </div>
+
     </div>
 </div>
 @endsection

@@ -139,7 +139,7 @@
             
             {{-- Bagan Status Prodi (Doughnut Chart) --}}
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Mahasiswa Beasiswa per Prodi</h3>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Mahasiswa Beasiswa per Prodi</h3>
                 <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
                     <div class="w-full max-w-xs h-64 flex items-center justify-center">
                         <canvas id="prodiChart"></canvas>

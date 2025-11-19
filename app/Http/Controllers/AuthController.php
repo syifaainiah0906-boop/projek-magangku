@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException; // ✅ Tambahkan baris ini
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -18,7 +17,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // 1. Validasi Data Masukan
+        // 1. Validasi input
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -33,17 +32,17 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // 2. Buat Pengguna Baru
+        // 2. Buat akun baru dengan role default "user"
         User::create([
             'name' => $request->nama,
             'email' => $request->email,
             'nim' => $request->nim,
             'prodi' => $request->prodi,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+            'role' => 'user', // 🔹 default bukan alumni lagi
         ]);
 
-        // 3. Alihkan Pengguna Setelah Berhasil
+        // 3. Redirect ke login setelah berhasil daftar
         return redirect('/login')->with('success', 'Akun berhasil dibuat! Silakan masuk.');
     }
 
@@ -54,7 +53,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validasi data masukan
+        // 1. Validasi login
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -64,13 +63,26 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        // Coba autentikasi pengguna
+        // 2. Coba login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+
+            $user = Auth::user();
+
+            // 3. Redirect sesuai role
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->route('dashboard');
+                case 'user':
+                    return redirect()->route('dashboard'); // 🔹 bisa ke halaman user biasa
+                case 'alumni':
+                    return redirect()->route('alumni_data.index');
+                default:
+                    return redirect()->route('dashboard');
+            }
         }
 
-        // Jika autentikasi gagal
+        // 4. Jika gagal login
         throw ValidationException::withMessages([
             'email' => ['Email atau password salah.'],
         ]);

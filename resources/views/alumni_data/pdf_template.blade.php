@@ -17,7 +17,12 @@
     </style>
 </head>
 <body>
-
+    {{-- KOP SURAT --}}
+<div class="kop-surat" style="text-align: center; margin-bottom: 20px;">
+    <img src="{{ public_path('images/Picture2.png') }}" 
+         alt="Kop Surat Politeknik Hasnur" 
+         style="width: 100%; max-width: 950px; height: auto;">
+</div>
     <div class="header">
         <h1>DATA ALUMNI</h1>
         <p>Tanggal Dibuat: {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}</p>

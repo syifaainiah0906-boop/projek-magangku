@@ -129,14 +129,34 @@ width: 120px;
 
 .form-box input[type="text"],
 .form-box input[type="email"],
-.form-box input[type="password"] {
+.form-box input[type="password"],
+.form-box select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 14px;
+    height: 40px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    background-color: #fff;
+    outline: none;
 }
+
+/* Warna teks abu muda untuk placeholder di dropdown */
+.form-box select option[disabled] {
+    color: #9ca3af; /* abu-abu muda seperti placeholder input */
+}
+
+/* Efek fokus */
+.form-box input:focus,
+.form-box select:focus {
+    border-color: #4A90E2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+}
+
 
 .checkbox {
     display: flex;

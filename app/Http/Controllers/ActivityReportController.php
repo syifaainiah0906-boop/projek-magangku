@@ -6,7 +6,6 @@ use App\Models\ActivityReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
@@ -15,49 +14,33 @@ class ActivityReportController extends Controller
     /**
      * Menampilkan daftar laporan kegiatan.
      */
-   public function index(Request $request)
+    public function index(Request $request)
 {
-    // Jika role admin → tampilkan semua data
-    if (auth()->user()->role === 'admin') {
-        $reports = \App\Models\ActivityReport::with('user')->orderBy('created_at', 'desc');
+    $reports = ActivityReport::with('user')->orderBy('activity_date', 'desc');
 
-        // Filter pencarian (opsional)
-        if ($request->filled('search')) {
-            $reports->whereHas('user', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                      ->orWhere('nim', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Filter semester (opsional)
-        if ($request->filled('semester')) {
-            $reports->whereHas('user', function ($query) use ($request) {
-                $query->where('semester', $request->semester);
-            });
-        }
-
-        // Filter tanggal (opsional)
-        if ($request->filled('start_date')) {
-            $reports->whereDate('activity_date', $request->start_date);
-        }
-
-        $reports = $reports->get();
-        $groupedReports = $reports->groupBy('user_id');
-    } else {
-        // Jika role user → tampilkan hanya data miliknya
-        $reports = \App\Models\ActivityReport::with('user')
-                    ->where('user_id', auth()->id())
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-
-        $groupedReports = $reports->groupBy('user_id');
+    // Filter pencarian (nama/NIM)
+    if ($request->filled('search')) {
+        $reports->whereHas('user', function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('nim', 'like', '%' . $request->search . '%');
+        });
     }
 
-    return view('activity_reports.index', compact('groupedReports'));
-}
+    // Filter tanggal
+    if ($request->filled('start_date')) {
+        $reports->whereDate('activity_date', $request->start_date);
+    }
 
+    // Jika user biasa → hanya data dia sendiri
+    if (Auth::user()->role !== 'admin') {
+        $reports->where('user_id', Auth::id());
+    }
 
+    $allReports = $reports->get();
 
+    return view('activity_reports.index', compact('allReports'));
+
+    }
 
     /**
      * Mengambil jumlah laporan kegiatan per bulan via AJAX.
@@ -147,44 +130,45 @@ class ActivityReportController extends Controller
      * Form edit laporan kegiatan.
      */
     public function edit(ActivityReport $activityReport)
-    {
-        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access.');
-        }
-
-        return view('activity_reports.edit', compact('activityReport'));
+{
+    // Hanya admin yang boleh mengedit
+    if (Auth::user()->role !== 'admin') {
+        abort(403, 'Anda tidak memiliki izin untuk mengedit laporan ini.');
     }
 
-    /**
-     * Update laporan kegiatan.
-     */
-    public function update(Request $request, ActivityReport $activityReport)
-    {
-        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
+    return view('activity_reports.edit', compact('activityReport'));
+}
 
-        $validated = $request->validate([
-            'activity_name' => 'required|string|max:255',
-            'activity_date' => 'required|date',
-            'description' => 'required|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('photo')) {
-            if ($activityReport->photo_file_path) {
-                Storage::disk('public')->delete($activityReport->photo_file_path);
-            }
-
-            $validated['photo_file_path'] = $request->file('photo')->store('photos', 'public');
-        }
-
-        $activityReport->update($validated);
-
-        return redirect()->route('activity_reports.index')
-            ->with('success', 'Laporan berhasil diperbarui!');
+/**
+ * Update laporan kegiatan.
+ */
+public function update(Request $request, ActivityReport $activityReport)
+{
+    // Hanya admin yang boleh mengupdate
+    if (Auth::user()->role !== 'admin') {
+        abort(403, 'Anda tidak memiliki izin untuk mengubah laporan ini.');
     }
 
+    $validated = $request->validate([
+        'activity_name' => 'required|string|max:255',
+        'activity_date' => 'required|date',
+        'description' => 'required|string',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    if ($request->hasFile('photo')) {
+        if ($activityReport->photo_file_path) {
+            Storage::disk('public')->delete($activityReport->photo_file_path);
+        }
+
+        $validated['photo_file_path'] = $request->file('photo')->store('photos', 'public');
+    }
+
+    $activityReport->update($validated);
+
+    return redirect()->route('activity_reports.index')
+        ->with('success', 'Laporan berhasil diperbarui!');
+}
     /**
      * Hapus laporan kegiatan.
      */
@@ -208,18 +192,25 @@ class ActivityReportController extends Controller
      * Download laporan kegiatan sebagai PDF.
      */
     public function downloadPdf(ActivityReport $activityReport)
-    {
-        if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $activityReport->load('user');
-
-        $pdf = Pdf::loadView('activity_reports.pdf_template', compact('activityReport'));
-
-        $userName = str_replace(' ', '_', $activityReport->user->name);
-        $fileName = "Laporan_Kegiatan_{$userName}_{$activityReport->id}.pdf";
-
-        return $pdf->download($fileName);
+{
+    if (Auth::user()->role !== 'admin' && $activityReport->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
     }
+
+    $activityReport->load('user');
+
+    // === Tambahan: Hitung urutan laporan ke-berapa ===
+    $laporanKe = ActivityReport::where('user_id', $activityReport->user_id)
+        ->where('id', '<=', $activityReport->id)
+        ->orderBy('id')
+        ->count();
+
+    // Generate PDF dengan data tambahan
+    $pdf = Pdf::loadView('activity_reports.pdf_template', compact('activityReport', 'laporanKe'));
+
+    $userName = str_replace(' ', '_', $activityReport->user->name);
+    $fileName = "Laporan_Kegiatan_{$userName}_{$activityReport->id}.pdf";
+
+    return $pdf->download($fileName);
+}
 }

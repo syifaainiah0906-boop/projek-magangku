@@ -4,22 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\AlumniData;
+use App\Models\Testimoni;
 
 class LandingController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah mahasiswa penerima beasiswa (role = 'mahasiswa')
-        $jumlahMahasiswaBeasiswa = User::where('role', 'mahasiswa')->count();
+        // Ambil testimoni terbaru dan join dengan data user
+        $testimonis = Testimoni::with('user')->latest()->take(6)->get();
 
-        // Hitung jumlah alumni terdaftar
+        // Hitung jumlah mahasiswa aktif (role = user)
+        $activeStudents = User::where('role', 'user')->count();
+
+        // Hitung jumlah alumni
         $jumlahAlumni = AlumniData::count();
 
-        // Karena tidak ada data program beasiswa aktif, kita buat nilainya statis = 1
+        // Sementara, 1 program beasiswa aktif
         $programBeasiswaAktif = 1;
 
+        // Kirim data ke landing
         return view('landing', compact(
-            'jumlahMahasiswaBeasiswa',
+            'testimonis',
+            'activeStudents',
             'jumlahAlumni',
             'programBeasiswaAktif'
         ));

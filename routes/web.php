@@ -9,7 +9,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BeasiswaController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\StudentDataController;
+use App\Http\Controllers\TestimoniController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -56,10 +58,11 @@ Route::middleware(['auth'])->group(function () {
     // ============================
     // Data Mahasiswa
     // ============================
-    Route::get('/student-data', [StudentDataController::class, 'index'])->name('student_data.index');
-    Route::put('/student-data/{id}', [StudentDataController::class, 'update'])->name('student_data.update');
-    Route::get('/student-data/{id}', [StudentDataController::class, 'show'])->name('student_data.show');
-    Route::get('/student-data/{id}/edit', [StudentDataController::class, 'edit'])->name('student_data.edit');
+Route::get('/student-data', [StudentDataController::class, 'index'])->name('student_data.index');
+Route::put('/student-data/{id}', [StudentDataController::class, 'update'])->name('student_data.update');
+Route::get('/student-data/{id}', [StudentDataController::class, 'show'])->name('student_data.show');
+Route::get('/student-data/{id}/edit', [StudentDataController::class, 'edit'])->name('student_data.edit');
+Route::delete('/student-data/{id}', [StudentDataController::class, 'destroy'])->name('student_data.destroy');
 
     // ============================
     // Laporan Semester
@@ -69,17 +72,25 @@ Route::middleware(['auth'])->group(function () {
         ->name('semester_reports.download_pdf');
 
     // ============================
-    // Laporan Kegiatan & Alumni
+    // Laporan Kegiatan
     // ============================
     Route::resource('activity_reports', ActivityReportController::class);
-    Route::resource('alumni_data', AlumniDataController::class);
-
-    // Unduh PDF tambahan
     Route::get('activity_reports/{activityReport}/download', [ActivityReportController::class, 'downloadPdf'])->name('activity_reports.download_pdf');
-    Route::get('alumni_data/{alumni_datum}/download', [AlumniDataController::class, 'downloadPdf'])->name('alumni_data.download_pdf');
+
+    // ============================
+    // Data Alumni
+    // ============================
+    Route::resource('alumni_data', AlumniDataController::class);
+    Route::get('alumni_data/{alumniDatum}/download', [AlumniDataController::class, 'downloadPdf'])->name('alumni_data.download_pdf');
 
     // ============================
     // Beasiswa
     // ============================
     Route::get('/beasiswa', [BeasiswaController::class, 'index'])->name('beasiswa.index');
+
+
+Route::post('/testimoni', [TestimoniController::class, 'store'])->name('testimoni.store');
+Route::delete('/testimoni/{id}', [TestimoniController::class, 'destroy'])->name('testimoni.destroy');
+
 });
+

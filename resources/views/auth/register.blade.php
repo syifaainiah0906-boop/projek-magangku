@@ -38,8 +38,17 @@
         <input type="text" name="nim" placeholder="Masukkan nim" required>
 
         <label>Prodi</label>
-        <input type="text" name="prodi" placeholder="Masukkan Prodi" required>
-
+        <select name="prodi" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; font-size: 14px; color: #333; background-color: #fff;">
+          <option value="" disabled selected>Masukkan Prodi</option>
+          <option value="D3 Teknik Otomotif">D3 Teknik Otomotif</option>
+          <option value="D3 Teknik Informatika">D3 Teknik Informatika</option>
+          <option value="D3 Budidaya Tanaman Perkebunan">D3 Budidaya Tanaman Perkebunan</option>
+          <option value="D4 Bisnis Digital">D4 Bisnis Digital</option>
+          <option value="D4 Akuntansi Bisnis Digital">D4 Akuntansi Bisnis Digital</option>
+          <option value="D4 Manajemen Pemasaran Internasional">D4 Manajemen Pemasaran Internasional</option>
+          <option value="D4 Teknologi Rekayasa Multimedia">D4 Teknologi Rekayasa Multimedia</option>
+        </select>
+      
         <label>Password</label>
         <input type="password" name="password" placeholder="Masukkan password" required>
 
